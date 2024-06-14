@@ -36,7 +36,7 @@ export class JobController extends BaseController {
     this.logger.info('Register routes for JobController...');
 
     this.addRoute({
-      path: '/?:createdAt.:limit',
+      path: '/?createdAt=:createdAt&limit=:limit',
       method: HttpMethod.Get,
       handler: this.index,
       middlewares: [
