@@ -1,0 +1,140 @@
+# ПОЛЬЗОВАТЕЛИ
+
+## Создать нового пользователя
+POST http://localhost:5001/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Butov S",
+  "email": "butov@gmail.com",
+  "type": "regular",
+  "password": "123@regular"
+}
+###
+
+## Аутентификация  пользователя
+POST http://localhost:5001/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "butov@gmail.com",
+  "password": "123@regular"
+}
+###
+
+## Проверка пользователя
+GET http://localhost:5001/users HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuc3ZnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2Mjc4NzgyZTNlYjZiOWIwNmNjODZjNyIsImlhdCI6MTcxMzg2Njc1MywiZXhwIjoxNzEzOTUzMTUzfQ.gEeWWWInZb7vqH5x3aqG7bAWFW0sBKYim8y5l_ug0kg
+###
+
+## Загрузить изображение на аватар
+POST http://localhost:5001/users/avatar HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuc3ZnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2Mjc4NzgyZTNlYjZiOWIwNmNjODZjNyIsImlhdCI6MTcxMzg2Njc1MywiZXhwIjoxNzEzOTUzMTUzfQ.gEeWWWInZb7vqH5x3aqG7bAWFW0sBKYim8y5l_ug0kg
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="avatar.jpg"
+Content-Type: image/jpeg
+
+< /Users/Nikolay/Desktop/avatar.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+###
+
+
+
+# РАБОЧИЕ ЗАПИСЯМИ
+
+## Получение рабочих записей
+GET http://localhost:5001/jobs/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiaUJLSlJXS3pYUXgxakUzSjFhRHlKLmpwZWciLCJ0eXBlIjoicmVndWxhciIsImlkIjoiNjYyNzg3ODJlM2ViNmI5YjA2Y2M4NmM3IiwiaWF0IjoxNzE1MTg2OTAwLCJleHAiOjE3MTUyNzMzMDB9.1FwRY3x0BNm37SleVE5Xs6eThIXjXxupJSYDReGjcoA
+Content-Type: application/json
+###
+
+## Создание рабочей записи
+POST http://localhost:5001/jobs HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2NGRkYmZlMzA0MzdhMDEyMDhlYmViMSIsImlhdCI6MTcxNjM3ODYzOSwiZXhwIjoxNzE2NDY1MDM5fQ.RC2Jih-Oyd33_LlDGfsV7eNedcRgGKbojt3RPUWwqiY
+Content-Type: application/json
+
+{
+  "employeeId": "664ddc4430437a01208ebeb9",
+  "timeFrom": "2023-05-18T06:00:00.000Z",
+  "timeTo": "2023-05-18T15:00:00.000Z",
+  "detailId": "662e349aaf1fd8fce2d446a4",
+  "typeOfJob": "kd",
+  "extra": 5,
+  "quantity": 24
+}
+###
+
+## Обновление рабочей записи
+PUT http://localhost:5001/jobs/662e67c688bfd28a06155c79 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiaUJLSlJXS3pYUXgxakUzSjFhRHlKLmpwZWciLCJ0eXBlIjoicmVndWxhciIsImlkIjoiNjYyNzg3ODJlM2ViNmI5YjA2Y2M4NmM3IiwiaWF0IjoxNzE0MzAyMTk4LCJleHAiOjE3MTQzODg1OTh9.c27Fo2n1PuVoo7_N_-ef55hxgEQUZUrapJk8C3zi1m8
+Content-Type: application/json
+
+{
+  "timeTo": "2023-04-29T13:00:00.000Z"
+}
+
+###
+
+## Удаление рабочей записи
+DELETE http://localhost:5001/jobs/662e61330918ffddc3e68f33 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiaUJLSlJXS3pYUXgxakUzSjFhRHlKLmpwZWciLCJ0eXBlIjoicmVndWxhciIsImlkIjoiNjYyNzg3ODJlM2ViNmI5YjA2Y2M4NmM3IiwiaWF0IjoxNzE0MzAyMTk4LCJleHAiOjE3MTQzODg1OTh9.c27Fo2n1PuVoo7_N_-ef55hxgEQUZUrapJk8C3zi1m8
+
+###
+
+
+
+# РАБОЧИЕ
+
+## Создание рабочего
+POST http://localhost:5001/employees HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2NGRkYmZlMzA0MzdhMDEyMDhlYmViMSIsImlhdCI6MTcxNjUzNjM4MCwiZXhwIjoxNzE2NjIyNzgwfQ.EbDziHuzNRIH1TUjXN4W98JGXpkjZUbdJZej2cIF010
+Content-Type: application/json
+
+{
+   "familyName": "Putin V",
+   "registrationNumber": 141,
+   "mainJob": "kd"
+}
+###
+
+## Получение рабочих
+GET http://localhost:5001/employees HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2NGRkYmZlMzA0MzdhMDEyMDhlYmViMSIsImlhdCI6MTcxNzE1Njc2OSwiZXhwIjoxNzE3MjQzMTY5fQ.y7-9ujWtwbT6rVRwzbVa4p6FVyI-R-1WnTf3mF823Uc
+###
+
+## Удаление рабочего
+DELETE http://localhost:5001/employees/66599a7bcfb8fe52f40617ca HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2NGRkYmZlMzA0MzdhMDEyMDhlYmViMSIsImlhdCI6MTcxNzE1Njc2OSwiZXhwIjoxNzE3MjQzMTY5fQ.y7-9ujWtwbT6rVRwzbVa4p6FVyI-R-1WnTf3mF823Uc
+###
+
+## Обновление рабочего
+PUT http://localhost:5001/employees/6659882dcfb8fe52f40613ea HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2NGRkYmZlMzA0MzdhMDEyMDhlYmViMSIsImlhdCI6MTcxNzE1Njc2OSwiZXhwIjoxNzE3MjQzMTY5fQ.y7-9ujWtwbT6rVRwzbVa4p6FVyI-R-1WnTf3mF823Uc
+Content-Type: application/json
+
+{
+   "familyName": "Antonov S",
+   "registrationNumber": 778,
+   "mainJob": "ma"
+}
+
+###
+
+
+
+# ДЕТАЛИ
+
+## Создание детали
+POST http://localhost:5001/details HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2NGRkYmZlMzA0MzdhMDEyMDhlYmViMSIsImlhdCI6MTcxNjM3ODYzOSwiZXhwIjoxNzE2NDY1MDM5fQ.RC2Jih-Oyd33_LlDGfsV7eNedcRgGKbojt3RPUWwqiY
+Content-Type: application/json
+
+{
+   "shortName": "503",
+   "longName": "50383310",
+   "normOfMinute": 50,
+   "customer": "Zen"
+}
+###
