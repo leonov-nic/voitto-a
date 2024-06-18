@@ -71,6 +71,7 @@ export default function SelectTypeOfJob({name, sx = []}: SelectTypeOfJobProps): 
       autoComplete={false}
       fullWidth={true}
       getOptionLabel={(option: TTypeOfJob) => `${option.name} / ${option.longName}`}
+      isOptionEqualToValue={(option: TTypeOfJob, value: TTypeOfJob) => option.name === value.name && option.longName === value.longName}
       onChange={(_event, value) => {
         value && setFieldValue(`${name}`, value.name);
       }}
