@@ -47,14 +47,14 @@ export class RestApplication {
   private async _initServer() {
     const port = this.config.get('PORT');
     // this.express.listen(port);
-    this.server.listen(port);
+    this.server.listen(port, 'localhost');
   }
 
   private async _initControllers() {
-    this.express.use('/users', this.userController.router);
-    this.express.use('/employees', this.employeeController.router);
-    this.express.use('/jobs', this.jobController.router);
-    this.express.use('/details', this.detailController.router);
+    this.express.use('/api/users', this.userController.router);
+    this.express.use('/api//employees', this.employeeController.router);
+    this.express.use('/api/jobs', this.jobController.router);
+    this.express.use('/api/details', this.detailController.router);
   }
 
   private async _initMiddleware() {

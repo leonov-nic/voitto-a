@@ -1,7 +1,6 @@
-/* eslint-disable no-undef */
-db = db.getSiblingDB('Vote');
+db = db.getSiblingDB('Voitto');
 db.createUser({
-  user: 'fobos',
-  pwd: 'Nic14012000',
-  roles: [{ role: 'dbOwner', db: 'Vote' }],});
-db.createCollection('voters');
+  user: 'liza',
+  pwd: 'Liza1609',
+  roles: [{ role: 'dbOwner', db: 'Voitto' }],});
+
