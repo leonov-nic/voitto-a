@@ -52,7 +52,7 @@ export class RestApplication {
 
   private async _initControllers() {
     this.express.use('/api/users', this.userController.router);
-    this.express.use('/api//employees', this.employeeController.router);
+    this.express.use('/api/employees', this.employeeController.router);
     this.express.use('/api/jobs', this.jobController.router);
     this.express.use('/api/details', this.detailController.router);
   }
