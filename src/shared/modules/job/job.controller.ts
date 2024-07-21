@@ -20,9 +20,9 @@ export type ParamJobId = {
 } | ParamsDictionary;
 
 export type RequestQuery = {
+  createdAt?: string;
   limit?: number;
   offset?: number;
-  createdAt?: string;
 }
 
 @injectable()
@@ -36,7 +36,8 @@ export class JobController extends BaseController {
     this.logger.info('Register routes for JobController...');
 
     this.addRoute({
-      path: '/?createdAt=:createdAt&limit=:limit',
+      // path: '/?createdAt=:createdAt&limit=:limit',
+      path: '/',
       method: HttpMethod.Get,
       handler: this.index,
       middlewares: [
@@ -76,9 +77,8 @@ export class JobController extends BaseController {
     });
   }
 
-  public async index({ params }: Request<RequestQuery>, res: Response): Promise<void> {
-    // console.log(params);
-    const jobs = await this.jobService.find(params);
+  public async index(req: Request, res: Response): Promise<void> {
+    const jobs = await this.jobService.find(req.query);
     this.ok(res, fillDTO(JobRdo, jobs));
   }
 

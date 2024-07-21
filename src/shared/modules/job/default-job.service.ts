@@ -10,7 +10,7 @@ import { EmployeeEntity } from '../employee/index.js';
 import { DetailEntity } from '../detail/detail.entity.js';
 import { RequestQuery } from './index.js';
 
-const DEFAULT_JOB_COUNT = 30;
+const DEFAULT_JOB_COUNT = 100;
 const DEFAULT_JOB_OFFSET = 0;
 
 @injectable()
@@ -45,21 +45,32 @@ export class DefaultJobService implements JobService {
     return result;
   }
 
-  public async find(params: RequestQuery): Promise<DocumentType<JobEntity>[] | null> {
-    const limit = !params.limit || params.limit > DEFAULT_JOB_COUNT ? DEFAULT_JOB_COUNT : Number(params.limit);
-    const offset = params.offset || DEFAULT_JOB_OFFSET;
+  public async find(query: RequestQuery): Promise<DocumentType<JobEntity>[] | null> {
+    console.log(query.createdAt);
+    const createdAt = query.createdAt ? query.createdAt : new Date().toISOString();
+    const limit = !query.limit || query.limit > DEFAULT_JOB_COUNT ? DEFAULT_JOB_COUNT : Number(query.limit);
+    const offset = query.offset || DEFAULT_JOB_OFFSET;
 
     let matchCondition = {};
-    if (params.createdAt) {
-        const dayStart = new Date(params.createdAt);
+    if (createdAt) {
+        const dayStart = new Date(createdAt);
         dayStart.setHours(0, 0, 0, 0);
+
+        if (createdAt.includes('+')) {
+          const hoursToAdd = parseInt(createdAt.split('+')[1].split(':')[0]);
+          dayStart.setHours(dayStart.getHours() + hoursToAdd);
+        } else if (createdAt.includes('-')) {
+          const hoursToMinus = parseInt(createdAt.split('-')[1].split(':')[0]);
+          dayStart.setHours(dayStart.getHours() - hoursToMinus);
+        };
+
         const dayEnd = new Date(dayStart);
         dayEnd.setDate(dayEnd.getDate() + 1);
 
         matchCondition = {
           createdAt: {
             $gte: dayStart,
-            $lt: dayEnd
+            $lt: dayEnd,
           }
         };
     }
