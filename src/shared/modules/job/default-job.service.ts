@@ -46,10 +46,9 @@ export class DefaultJobService implements JobService {
   }
 
   public async find(query: RequestQuery): Promise<DocumentType<JobEntity>[] | null> {
-    console.log(query.createdAt);
     const createdAt = query.createdAt ? query.createdAt : new Date().toISOString();
-    const limit = !query.limit || query.limit > DEFAULT_JOB_COUNT ? DEFAULT_JOB_COUNT : Number(query.limit);
-    const offset = query.offset || DEFAULT_JOB_OFFSET;
+    const limit = query.limit && query.limit < DEFAULT_JOB_COUNT ? query.limit : DEFAULT_JOB_COUNT;
+    const offset = query.offset ? query.offset : DEFAULT_JOB_OFFSET;
 
     let matchCondition = {};
     if (createdAt) {
@@ -189,9 +188,9 @@ export class DefaultJobService implements JobService {
       { $addFields: { employeeId: { $toString: '$employeeId' } } },
       { $addFields: { _id: { $toString: '$_id' } } },
       { $match: matchCondition },
+      { $sort: { createdAt: SortType.Down } },
       { $skip: offset },
       { $limit: limit },
-      { $sort: { createdAt: SortType.Down } },
     ])
     .exec();
   }
