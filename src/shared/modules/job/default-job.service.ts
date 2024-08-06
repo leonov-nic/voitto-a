@@ -75,7 +75,7 @@ export class DefaultJobService implements JobService {
     }
 
     return await this.jobModel
-    .aggregate([
+      .aggregate([
       {
         $lookup: {
           from: 'Users',
@@ -189,8 +189,8 @@ export class DefaultJobService implements JobService {
       { $addFields: { _id: { $toString: '$_id' } } },
       { $match: matchCondition },
       { $sort: { createdAt: SortType.Down } },
-      { $skip: offset },
       { $limit: limit },
+      { $skip: offset },
     ])
     .exec();
   }
