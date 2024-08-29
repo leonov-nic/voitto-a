@@ -23,6 +23,7 @@ export type RequestQuery = {
   createdAt?: string;
   limit?: number;
   offset?: number;
+  filterByMonth?: boolean;
 }
 
 @injectable()
@@ -78,10 +79,10 @@ export class JobController extends BaseController {
   }
 
   public async index(req: Request, res: Response): Promise<void> {
-    const {offset, limit, createdAt} = req.query
+    const {offset, limit, createdAt, filterByMonth} = req.query
     const newOffset = Number(offset);
     const newLimit = Number(limit);
-    const newQuery = {...req.query, offset: newOffset, limit: newLimit, createdAt}
+    const newQuery = {...req.query, offset: newOffset, limit: newLimit, createdAt, filterByMonth}
     const jobs = await this.jobService.find(newQuery);
     this.ok(res, fillDTO(JobRdo, jobs));
   }

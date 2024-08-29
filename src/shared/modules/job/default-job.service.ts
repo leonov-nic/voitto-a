@@ -10,7 +10,7 @@ import { EmployeeEntity } from '../employee/index.js';
 import { DetailEntity } from '../detail/detail.entity.js';
 import { RequestQuery } from './index.js';
 
-const DEFAULT_JOB_COUNT = 100;
+const DEFAULT_JOB_COUNT = 250;
 const DEFAULT_JOB_OFFSET = 0;
 
 @injectable()
@@ -46,13 +46,26 @@ export class DefaultJobService implements JobService {
   }
 
   public async find(query: RequestQuery): Promise<DocumentType<JobEntity>[] | null> {
-    console.log(query)
+
     const createdAt = query.createdAt ? query.createdAt : new Date().toISOString();
     const limit = query.limit && query.limit < DEFAULT_JOB_COUNT ? query.limit : DEFAULT_JOB_COUNT;
     const offset = query.offset ? query.offset : DEFAULT_JOB_OFFSET;
-    console.log(createdAt, limit, offset)
     let matchCondition = {};
-    if (createdAt) {
+
+    if (query.filterByMonth) {
+      const monthYear = new Date(createdAt);
+      const month = monthYear.getMonth();
+      const year = monthYear.getFullYear();
+      const startOfMonth = new Date(year, month, 1);
+      const endOfMonth = new Date(year, month + 1, 1);
+
+      matchCondition = {
+        createdAt: {
+          $gte: startOfMonth,
+          $lt: endOfMonth
+        }
+      };
+    } else if (createdAt) {
         const dayStart = new Date(createdAt);
         dayStart.setHours(0, 0, 0, 0);
 
@@ -189,7 +202,7 @@ export class DefaultJobService implements JobService {
       { $addFields: { employeeId: { $toString: '$employeeId' } } },
       { $addFields: { _id: { $toString: '$_id' } } },
       { $match: matchCondition },
-      { $sort: { createdAt: SortType.Down } },
+      { $sort: { createdAt: query.filterByMonth ? SortType.Up : SortType.Down } },
       { $skip: offset },
       { $limit: limit },
     ])
