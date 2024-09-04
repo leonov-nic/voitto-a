@@ -79,11 +79,12 @@ export class JobController extends BaseController {
   }
 
   public async index(req: Request, res: Response): Promise<void> {
+    const userId = req.tokenPayload.id;
     const {offset, limit, createdAt, filterByMonth} = req.query
     const newOffset = Number(offset);
     const newLimit = Number(limit);
     const newQuery = {...req.query, offset: newOffset, limit: newLimit, createdAt, filterByMonth}
-    const jobs = await this.jobService.find(newQuery);
+    const jobs = await this.jobService.find(newQuery, userId);
     this.ok(res, fillDTO(JobRdo, jobs));
   }
 

@@ -45,12 +45,14 @@ export class DefaultJobService implements JobService {
     return result;
   }
 
-  public async find(query: RequestQuery): Promise<DocumentType<JobEntity>[] | null> {
-
+  public async find(query: RequestQuery, userId: string): Promise<DocumentType<JobEntity>[] | null> {
+    console.log(userId);
     const createdAt = query.createdAt ? query.createdAt : new Date().toISOString();
     const limit = query.limit && query.limit < DEFAULT_JOB_COUNT ? query.limit : DEFAULT_JOB_COUNT;
     const offset = query.offset ? query.offset : DEFAULT_JOB_OFFSET;
     let matchCondition = {};
+    let dayStart;
+    let dayEnd;
 
     if (query.filterByMonth) {
       const monthYear = new Date(createdAt);
@@ -59,6 +61,7 @@ export class DefaultJobService implements JobService {
       const startOfMonth = new Date(year, month, 1);
       const endOfMonth = new Date(year, month + 1, 1);
 
+
       matchCondition = {
         createdAt: {
           $gte: startOfMonth,
@@ -66,7 +69,7 @@ export class DefaultJobService implements JobService {
         }
       };
     } else if (createdAt) {
-        const dayStart = new Date(createdAt);
+        dayStart = new Date(createdAt);
         dayStart.setHours(0, 0, 0, 0);
 
         if (createdAt.includes('+')) {
@@ -77,7 +80,7 @@ export class DefaultJobService implements JobService {
           dayStart.setHours(dayStart.getHours() - hoursToMinus);
         };
 
-        const dayEnd = new Date(dayStart);
+        dayEnd = new Date(dayStart);
         dayEnd.setDate(dayEnd.getDate() + 1);
 
         matchCondition = {
@@ -201,6 +204,53 @@ export class DefaultJobService implements JobService {
       { $addFields: { detailId: { $toString: '$detailId' } } },
       { $addFields: { employeeId: { $toString: '$employeeId' } } },
       { $addFields: { _id: { $toString: '$_id' } } },
+
+
+      // Не срабатывает тут подсчёт числа
+
+      {
+        $lookup: {
+          from: 'Jobs',
+          let: {
+              userId: 15,
+              dayStart,
+              dayEnd,
+            },
+          pipeline: [
+            // {
+            //   $match: {
+            //     $expr: {
+            //       $and: [
+            //         { $eq: ["$master._id", "$$userId"] },
+            //         // { $gte: ["$createdAt", "$$dayStart"] },
+            //         // { $lt: ["$createdAt", "$$dayEnd"] }
+            //       ]
+            //     }
+            //   },
+            // },
+
+            {
+              $match: { $expr: {$eq: ["$quantity", '$$userId'] }}
+            },
+            { $count: 'count' },
+          ], as: "countData"
+        }
+      },
+      {
+        $unwind: {
+          path: "$countData",
+          preserveNullAndEmptyArrays: true,
+        }
+      },
+      {
+        $addFields: {
+          count: { $ifNull: ["$countData.count", 0] }
+        }
+      },
+
+
+
+
       { $match: matchCondition },
       { $sort: { createdAt: query.filterByMonth ? SortType.Up : SortType.Down } },
       { $skip: offset },

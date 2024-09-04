@@ -46,4 +46,7 @@ export class JobRdo {
   @Expose({ name: 'master'})
   @Type(() => UserRdo)
   public master: UserRdo;
+
+  @Expose()
+  public count: number;
 }

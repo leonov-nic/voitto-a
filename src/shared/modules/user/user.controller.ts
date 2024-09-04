@@ -105,9 +105,7 @@ export class UserController extends BaseController {
     this.ok(res, Object.assign(responseData, { token }));
   }
 
-
   public async uploadAvatar({ tokenPayload, file }: Request, res: Response) {
-    console.log(file, 'controller');
     const uploadFile = { avatar: file?.filename };
     await this.userService.updateById(tokenPayload.id, uploadFile);
     this.created(res, fillDTO(UploadAvatarRdo, { avatar: uploadFile.avatar }));
