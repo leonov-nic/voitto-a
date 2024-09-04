@@ -46,7 +46,7 @@ export class DefaultJobService implements JobService {
   }
 
   public async find(query: RequestQuery, userId: string): Promise<DocumentType<JobEntity>[] | null> {
-    console.log(userId);
+
     const createdAt = query.createdAt ? query.createdAt : new Date().toISOString();
     const limit = query.limit && query.limit < DEFAULT_JOB_COUNT ? query.limit : DEFAULT_JOB_COUNT;
     const offset = query.offset ? query.offset : DEFAULT_JOB_OFFSET;
@@ -205,33 +205,27 @@ export class DefaultJobService implements JobService {
       { $addFields: { employeeId: { $toString: '$employeeId' } } },
       { $addFields: { _id: { $toString: '$_id' } } },
 
-
-      // Не срабатывает тут подсчёт числа
-
       {
         $lookup: {
           from: 'Jobs',
           let: {
-              userId: 15,
+              userId: { $toObjectId: userId },
               dayStart,
               dayEnd,
             },
           pipeline: [
-            // {
-            //   $match: {
-            //     $expr: {
-            //       $and: [
-            //         { $eq: ["$master._id", "$$userId"] },
-            //         // { $gte: ["$createdAt", "$$dayStart"] },
-            //         // { $lt: ["$createdAt", "$$dayEnd"] }
-            //       ]
-            //     }
-            //   },
-            // },
-
             {
-              $match: { $expr: {$eq: ["$quantity", '$$userId'] }}
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$master", "$$userId"] },
+                    { $gte: ["$createdAt", "$$dayStart"] },
+                    { $lt: ["$createdAt", "$$dayEnd"] }
+                  ]
+                }
+              },
             },
+
             { $count: 'count' },
           ], as: "countData"
         }
@@ -247,10 +241,6 @@ export class DefaultJobService implements JobService {
           count: { $ifNull: ["$countData.count", 0] }
         }
       },
-
-
-
-
       { $match: matchCondition },
       { $sort: { createdAt: query.filterByMonth ? SortType.Up : SortType.Down } },
       { $skip: offset },
