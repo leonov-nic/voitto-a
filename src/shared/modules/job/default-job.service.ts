@@ -8,6 +8,7 @@ import { StatusCodes } from 'http-status-codes';
 import { JobEntity, CreateJobDto, UpdateJobDto } from './index.js';
 import { EmployeeEntity } from '../employee/index.js';
 import { DetailEntity } from '../detail/detail.entity.js';
+import { UserEntity } from '../user/user.entity.js';
 import { RequestQuery } from './index.js';
 
 const DEFAULT_JOB_COUNT = 250;
@@ -20,6 +21,7 @@ export class DefaultJobService implements JobService {
     @inject(Component.JobModel) private readonly jobModel: types.ModelType<JobEntity>,
     @inject(Component.EmployeeModel) private readonly employeeModel: types.ModelType<EmployeeEntity>,
     @inject(Component.DetailModel) private readonly detailModel: types.ModelType<DetailEntity>,
+    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>,
   ) {}
 
   public async create(dto: CreateJobDto): Promise<DocumentType<JobEntity>> {
@@ -268,6 +270,7 @@ export class DefaultJobService implements JobService {
 
   public async isAuthor(userId: string, documentId: string): Promise<boolean> {
     const job = await this.jobModel.findById(documentId);
-    return job?.master.toString() === userId;
+    const user = await this.userModel.findById(userId);
+    return job?.master.toString() === userId || user?.type === 'admin';
   }
 }

@@ -23,7 +23,7 @@ export class ValidateAuthorsMiddleware implements Middleware {
     if (!(await this.service.isAuthor(tokenPayload.id, documentId))) {
       throw new HttpError(
         StatusCodes.FORBIDDEN,
-        `No rights for ${this.entityName} with id ${documentId}.`,
+        `No rights for this operation width ${this.entityName}.`,
         'ValidateAuthorMiddleware',
       );
     }

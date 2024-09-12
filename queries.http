@@ -6,10 +6,10 @@ POST http://localhost:5002/api/users/register HTTP/1.1
 content-type: application/json
 
 {
-  "name": "Butov S",
-  "email": "butov@gmail.com",
-  "type": "regular",
-  "password": "123@regular"
+  "name": "Liza S",
+  "email": "liza@gmail.com",
+  "type": "admin",
+  "password": "123@admin"
 }
 
 ###
