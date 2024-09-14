@@ -166,13 +166,25 @@ export class DefaultJobService implements JobService {
       {
         $addFields: {
           convertedTimeTo: {
-            $dateFromString: {
-              dateString: "$timeTo"
+            $cond: {
+              if: { $eq: ["$timeTo", "-"] },
+              then: "-",
+              else: {
+                $dateFromString: {
+                  dateString: "$timeTo"
+                }
+              }
             }
           },
           convertedTimeFrom: {
-            $dateFromString: {
-              dateString: "$timeFrom"
+            $cond: {
+              if: { $eq: ["$timeFrom", "-"] },
+              then: "-",
+              else: {
+                $dateFromString: {
+                  dateString: "$timeFrom"
+                }
+              }
             }
           }
         }
@@ -181,23 +193,29 @@ export class DefaultJobService implements JobService {
         $addFields: {
           totalHours: {
             $cond: {
-              if: {
-                $eq: [
-                  {
-                    $divide: [
-                      {$subtract: ["$convertedTimeTo", "$convertedTimeFrom"]},
-                      3600000
+              if: { $and: [{ $eq: ["$timeTo", "-"] }, { $eq: ["$timeFrom", "-"] }] },
+              then: "-",
+              else: {
+                $cond: {
+                  if: {
+                    $eq: [
+                      {
+                        $divide: [
+                          { $subtract: ["$convertedTimeTo", "$convertedTimeFrom"] },
+                          3600000
+                        ]
+                      },
+                      9
                     ]
                   },
-                  9
-                ]
-              },
-              then: 8.5,
-              else: {
-                $divide: [
-                  {$subtract: ["$convertedTimeTo", "$convertedTimeFrom"]},
-                  3600000
-                ]
+                  then: 8.5,
+                  else: {
+                    $divide: [
+                      { $subtract: ["$convertedTimeTo", "$convertedTimeFrom"] },
+                      3600000
+                    ]
+                  }
+                }
               }
             }
           }

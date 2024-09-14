@@ -11,7 +11,7 @@ import {
 } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../types/index.js';
-import { JobService, CreateJobDto, JobRdo, UpdateJobDto } from './index.js';
+import { JobService, JobRdo, UpdateJobDto, CreateJobDto } from './index.js';
 import { fillDTO } from '../../helpers/index.js';
 import { ParamsDictionary } from 'express-serve-static-core';
 
