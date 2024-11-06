@@ -189,6 +189,7 @@ export class DefaultJobService implements JobService {
           }
         }
       },
+
       {
         $addFields: {
           totalHours: {
@@ -196,24 +197,26 @@ export class DefaultJobService implements JobService {
               if: { $and: [{ $eq: ["$timeTo", "-"] }, { $eq: ["$timeFrom", "-"] }] },
               then: "-",
               else: {
-                $cond: {
-                  if: {
-                    $eq: [
-                      {
-                        $divide: [
-                          { $subtract: ["$convertedTimeTo", "$convertedTimeFrom"] },
-                          3600000
+                $let: {
+                  vars: {
+                    hoursDifference: {
+                      $divide: [
+                        { $subtract: ["$convertedTimeTo", "$convertedTimeFrom"] },
+                        3600000
+                      ]
+                    }
+                  },
+                  in: {
+                    $cond: {
+                      if: {
+                        $and: [
+                          {$lt: [{$hour: { $dateFromString: { dateString: "$timeFrom" } } }, 12]},
+                          {$gte: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeTo", 0, 19]}} }}, 12]}
                         ]
                       },
-                      9
-                    ]
-                  },
-                  then: 8.5,
-                  else: {
-                    $divide: [
-                      { $subtract: ["$convertedTimeTo", "$convertedTimeFrom"] },
-                      3600000
-                    ]
+                      then: { $subtract: ["$$hoursDifference", 0.5] }, // Вычитаем 0.5 часа (30 минут)
+                      else: "$$hoursDifference"
+                    }
                   }
                 }
               }
@@ -221,6 +224,7 @@ export class DefaultJobService implements JobService {
           }
         }
       },
+
       { $addFields: { detailId: { $toString: '$detailId' } } },
       { $addFields: { employeeId: { $toString: '$employeeId' } } },
       { $addFields: { _id: { $toString: '$_id' } } },
