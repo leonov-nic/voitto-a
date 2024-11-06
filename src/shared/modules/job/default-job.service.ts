@@ -210,7 +210,7 @@ export class DefaultJobService implements JobService {
                     $cond: {
                       if: {
                         $and: [
-                          {$lt: [{$hour: { $dateFromString: { dateString: "$timeFrom" } } }, 12]},
+                          {$lt: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeFrom", 0, 19]}} }}, 12]},
                           {$gte: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeTo", 0, 19]}} }}, 12]}
                         ]
                       },
