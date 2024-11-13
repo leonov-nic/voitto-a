@@ -9,14 +9,10 @@ import {
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../types/index.js';
 import { DetailService, CreateDetailDto, DetailRdo } from './index.js';
+import { UpdateDetailDto } from './dto/update-detail.dto.js';
+
 import { fillDTO } from '../../helpers/index.js';
-import { ParamsDictionary } from 'express-serve-static-core';
-
 import { RequestBody } from '../../types/index.js';
-
-export type ParamEmployeeId = {
-  id: string;
-} | ParamsDictionary;
 
 export type CreateeDetailRequest = Request<
   RequestBody,
@@ -52,6 +48,16 @@ export class DetailController extends BaseController {
         new ValidateDtoMiddleware(CreateDetailDto),
       ],
     });
+
+    this.addRoute({
+      path: '/:id',
+      method: HttpMethod.Put,
+      handler: this.update,
+      middlewares: [
+        new PrivateRouteMiddleware,
+        new ValidateDtoMiddleware(UpdateDetailDto),
+      ]
+    });
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
@@ -63,5 +69,11 @@ export class DetailController extends BaseController {
     const details = await this.detailService.create(body);
     this.created(res, fillDTO(DetailRdo, details));
     this.logger.info(`Created new detail ${body.shortName}`);
+  }
+
+  public async update({ body, params }: Request, res: Response): Promise<void> {
+    const updatedDetail = await this.detailService.updateById(body, params.id);
+    this.ok(res, fillDTO(UpdateDetailDto, updatedDetail));
+    this.logger.info(`Updated for detail ${body.shortName}`);
   }
 }

@@ -7,6 +7,7 @@ import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 
 import { DetailEntity, DetailService, CreateDetailDto } from './index.js';
+import { UpdateDetailDto } from './dto/update-detail.dto.js';
 
 
 @injectable()
@@ -29,6 +30,12 @@ export class DefaultDetailService implements DetailService {
     const result = await this.detailModel.create(dto);
     this.logger.info(`New detail: ${dto.shortName} created`);
     return result;
+  }
+
+  public async updateById(dto: UpdateDetailDto, detailId: string): Promise<DocumentType<DetailEntity> | null> {
+    return this.detailModel
+      .findOneAndUpdate({_id: detailId}, dto, {new: true})
+      .exec();
   }
 
   public async exists(detailId: string): Promise<boolean> {

@@ -7,6 +7,7 @@ import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 
 import { EmployeeEntity, EmployeeService, CreateEmployeeDto, UpdateEmployeeDto } from './index.js';
+import { UserEntity } from '../user/user.entity.js';
 
 
 @injectable()
@@ -14,6 +15,7 @@ export class DefaultEmployeeService implements EmployeeService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.EmployeeModel) private readonly employeeModel: types.ModelType<EmployeeEntity>,
+    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>,
   ) {}
 
   public async find(): Promise<DocumentType<EmployeeEntity>[] | null> {
@@ -64,7 +66,7 @@ export class DefaultEmployeeService implements EmployeeService {
 
   public async isAuthor(userId: string, documentId: string): Promise<boolean> {
     const employee = await this.employeeModel.findById(documentId);
-    console.log(employee);
-    return employee?.masterId.toString() === userId;
+    const user = await this.userModel.findById(userId);
+    return employee?.masterId.toString() === userId || user?.type === 'admin';
   }
 }

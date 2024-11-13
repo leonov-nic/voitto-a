@@ -5,3 +5,4 @@ export * from './dto/create-detail.dto.js';
 export * from './rdo/detail.rdo.js';
 export * from './detail.controller.js';
 export * from './detail.container.js';
+

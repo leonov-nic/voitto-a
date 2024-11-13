@@ -12,4 +12,7 @@ export class DetailRdo {
 
   @Expose()
   public normOfMinute: number;
+
+  @Expose()
+  public customer: number;
 }
