@@ -30,19 +30,30 @@ export class DefaultJobService implements JobService {
 
     if (!isExistEmployee) {
       throw new HttpError(
-        StatusCodes.LOCKED,
+        StatusCodes.NOT_FOUND,
         'Employee no exist',
         'registrationExists'
       );
     }
     if (!isExistDetaile) {
       throw new HttpError(
-        StatusCodes.LOCKED,
+        StatusCodes.NOT_FOUND,
         'Detail no exist',
         'registrationExists'
       );
     }
-    const result = await this.jobModel.create(dto);
+    // const result = await this.jobModel.create(dto);
+    const newDate = new Date();
+    if (newDate.getHours() < 12) {
+      newDate.setHours(newDate.getHours() - 15);
+    }
+
+    const result = await this.jobModel.create({
+        ...dto,
+        createdAt: newDate,
+        updatedAt: newDate,
+    });
+
     this.logger.info(`New job created for employee: ${dto.employeeId}`);
     return result;
   }
