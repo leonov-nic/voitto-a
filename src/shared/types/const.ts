@@ -1,6 +1,6 @@
 import { TNameOfJob, TTypeOfJob } from "./index.js";
 
-export const TYPES = ['admin', 'regular'] as const;
+export const TYPES = ['admin', 'regular', 'storage'] as const;
 
 export const NAMESOFJOB = [
   'b',

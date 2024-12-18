@@ -7,6 +7,7 @@ export type RequestBody = Record<string, unknown>;
 export enum UserType {
   Admin = 'admin',
   Regular = 'regular',
+  Storage = 'storage',
 }
 
 export enum SortType {
