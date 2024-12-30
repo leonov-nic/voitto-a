@@ -15,6 +15,11 @@ export enum SortType {
   Up = 1,
 }
 
+export enum TypeOperation {
+  Shipment = 'shipment',
+  Arrival = 'arrival',
+}
+
 export enum Frequency {
   often = '1',
   middle = '2',
@@ -72,5 +77,3 @@ export type ValidationErrorField = {
   value: string;
   messages: string[];
 };
-
-

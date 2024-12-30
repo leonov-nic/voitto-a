@@ -27,4 +27,12 @@ export const Component = {
   DetailService: Symbol.for('DetailService'),
   DetailModel: Symbol.for('DetailModel'),
   DetailController: Symbol.for('DetailController'),
+
+  StoreHouseService: Symbol.for('StoreHouseService'),
+  StoreHouseModel: Symbol.for('StoreHouseModel'),
+  StoreHouseController: Symbol.for('StoreHouseController'),
+
+  StoreHouseOperationService: Symbol.for('StoreHouseOperationService'),
+  StoreHouseOperationModel: Symbol.for('StoreHouseOperationModel'),
+  StoreHouseOperationController: Symbol.for('StoreHouseOperationController'),
 } as const;

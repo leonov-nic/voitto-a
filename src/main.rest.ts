@@ -5,6 +5,8 @@ import { createUserContainer } from './shared/modules/user/index.js';
 import { createJobContainer } from './shared/modules/job/index.js';
 import { createEmployeeContainer } from './shared/modules/employee/index.js';
 import { createDetailContainer } from './shared/modules/detail/index.js';
+import { createStoreHouseContainer } from './shared/modules/storehouse/index.js';
+import { createStoreHouseOperationContainer } from './shared/modules/storehouseoperation/index.js';
 import { createAuthContainer } from './shared/modules/auth/index.js';
 
 import { Component } from './shared/types/component.enum.js';
@@ -17,6 +19,8 @@ async function bootstrap() {
     createEmployeeContainer(),
     createJobContainer(),
     createDetailContainer(),
+    createStoreHouseContainer(),
+    createStoreHouseOperationContainer(),
     createAuthContainer(),
   );
 

@@ -27,11 +27,12 @@ export class RestApplication {
     @inject(Component.Config) private readonly config: Config<RestSchema>,
     @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient,
 
-
     @inject(Component.UserController) private readonly userController: Controller,
     @inject(Component.EmployeeController) private readonly employeeController: Controller,
     @inject(Component.JobController) private readonly jobController: Controller,
     @inject(Component.DetailController) private readonly detailController: Controller,
+    @inject(Component.StoreHouseController) private readonly storeHouseController: Controller,
+    @inject(Component.StoreHouseOperationController) private readonly storeHouseOperationController: Controller,
 
     @inject(Component.ExceptionFilter) private readonly appExceptionFilter: ExceptionFilter,
     @inject(Component.AuthExceptionFilter) private readonly authExceptionFilter: AuthExceptionFilter,
@@ -55,6 +56,8 @@ export class RestApplication {
     this.express.use('/api/employees', this.employeeController.router);
     this.express.use('/api/jobs', this.jobController.router);
     this.express.use('/api/details', this.detailController.router);
+    this.express.use('/api/storehouse', this.storeHouseController.router);
+    this.express.use('/api/storeoperation', this.storeHouseOperationController.router);
   }
 
   private async _initMiddleware() {

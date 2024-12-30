@@ -26,7 +26,7 @@ Content-Type: application/json
 
 ## Проверка пользователя
 GET http://localhost:5002/users HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuc3ZnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2Mjc4NzgyZTNlYjZiOWIwNmNjODZjNyIsImlhdCI6MTcxMzg2Njc1MywiZXhwIjoxNzEzOTUzMTUzfQ.gEeWWWInZb7vqH5x3aqG7bAWFW0sBKYim8y5l_ug0kg
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY3MzM3MjczOThmZTU1M2Y3YmNmMTI2ZCIsImlhdCI6MTczNTE2Mzg1NiwiZXhwIjoxNzM1MjQ2NjU2fQ.-qTTg703IomQI-pDDC-oXEBaOxtnb8R9lfHlFv8TX50
 ###
 
 ## Загрузить изображение на аватар
@@ -42,6 +42,55 @@ Content-Type: image/jpeg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 ###
 
+
+# СКЛАД
+
+## Добавление товара
+
+POST http://localhost:5002/api/storehouse HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY3MzM3MjczOThmZTU1M2Y3YmNmMTI2ZCIsImlhdCI6MTczNTE2Mzg1NiwiZXhwIjoxNzM1MjQ2NjU2fQ.-qTTg703IomQI-pDDC-oXEBaOxtnb8R9lfHlFv8TX50
+content-type: application/json
+
+{
+  "name": "Куртка",
+  "shortName": "50",
+  "company": "Firma",
+  "characteristics": "",
+  "size": 50,
+  "diameter": null,
+  "type": "oxrana",
+  "price": "",
+  "isActive": true,
+  "currentQuantity": 0
+}
+
+###
+
+## Получение товаров
+
+GET http://localhost:5002/api/storehouse HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY3MzM3MjczOThmZTU1M2Y3YmNmMTI2ZCIsImlhdCI6MTczNTE2Mzg1NiwiZXhwIjoxNzM1MjQ2NjU2fQ.-qTTg703IomQI-pDDC-oXEBaOxtnb8R9lfHlFv8TX50
+content-type: application/json
+###
+
+
+## Добавление операции с товаром
+
+POST http://localhost:5002/api/storeoperation HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY3MzM3MjczOThmZTU1M2Y3YmNmMTI2ZCIsImlhdCI6MTczNTE2Mzg1NiwiZXhwIjoxNzM1MjQ2NjU2fQ.-qTTg703IomQI-pDDC-oXEBaOxtnb8R9lfHlFv8TX50
+content-type: application/json
+
+{
+  "productId": "6769661acf9e4f51a2e94b4d",
+  "employeeId": "673a3d1e815cdd7335d7bbb1",
+  "box": 2,
+  "amount": 25,
+  "totalAmount": 50,
+  "typeOperation": "arrival",
+  "fromWhom": "Володя"
+}
+
+###
 
 
 # РАБОЧИЕ ЗАПИСЯМИ
@@ -102,8 +151,8 @@ Content-Type: application/json
 ###
 
 ## Получение рабочих
-GET http://localhost:5002/employees HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY2NGRkYmZlMzA0MzdhMDEyMDhlYmViMSIsImlhdCI6MTcxNzE1Njc2OSwiZXhwIjoxNzE3MjQzMTY5fQ.y7-9ujWtwbT6rVRwzbVa4p6FVyI-R-1WnTf3mF823Uc
+GET http://localhost:5002/api/employees HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJ1dG92QGdtYWlsLmNvbSIsIm5hbWUiOiJCdXRvdiBTIiwiYXZhdGFyIjoiZGVmYXVsdC1hdmF0YXIuanBnIiwidHlwZSI6InJlZ3VsYXIiLCJpZCI6IjY3MzM3MjczOThmZTU1M2Y3YmNmMTI2ZCIsImlhdCI6MTczNTE2Mzg1NiwiZXhwIjoxNzM1MjQ2NjU2fQ.-qTTg703IomQI-pDDC-oXEBaOxtnb8R9lfHlFv8TX50
 ###
 
 ## Удаление рабочего
