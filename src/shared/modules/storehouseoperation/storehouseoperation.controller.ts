@@ -64,7 +64,6 @@ export class StoreHouseOperationController extends BaseController {
   }
 
   public async create(req: Request, res: Response): Promise<void> {
-    console.log(req.body)
     const details = await this.storeHouseOperationService.create(req.body);
     this.created(res, fillDTO(StoreHouseOperationRdo, details));
   }

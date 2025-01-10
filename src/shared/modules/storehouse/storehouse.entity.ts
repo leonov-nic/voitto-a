@@ -16,8 +16,8 @@ export class StoreHouseEntity extends defaultClasses.TimeStamps {
   @prop({default: ''})
   public characteristics: string;
 
-  @prop({default: null})
-  public size: number;
+  @prop({default: ''})
+  public size: string;
 
   @prop({default: null})
   public diameter: number;

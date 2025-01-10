@@ -16,8 +16,8 @@ export enum SortType {
 }
 
 export enum TypeOperation {
-  Shipment = 'shipment',
-  Arrival = 'arrival',
+  Shipment = 'Shipment',
+  Arrival = 'Arrival',
 }
 
 export enum Frequency {

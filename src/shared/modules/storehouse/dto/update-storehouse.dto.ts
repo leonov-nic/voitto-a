@@ -11,7 +11,7 @@ export class UpdateStoreHouseDto {
   public characteristics: string;
 
   @IsOptional()
-  public size: number;
+  public size: string;
 
   @IsOptional()
   public diameter: number;
