@@ -10,4 +10,6 @@ export interface StoreHouseServiceInterface extends DocumentExists {
   create(dto: CreateStoreHouseDto): Promise<DocumentType<StoreHouseEntity>>;
   updateById(dto: UpdateStoreHouseDto, positionId: string): Promise<DocumentType<StoreHouseEntity> | null>;
   deleteById(positionId: string): Promise<void>;
+  incrementCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean>;
+  decrementCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean>;
 }

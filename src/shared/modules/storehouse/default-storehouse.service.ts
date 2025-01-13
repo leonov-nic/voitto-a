@@ -2,6 +2,8 @@ import { inject, injectable } from 'inversify';
 import { DocumentType, types } from '@typegoose/typegoose';
 import { PipelineStage } from 'mongoose';
 import { SortType } from '../../types/index.js';
+import { StatusCodes } from 'http-status-codes';
+import { HttpError } from '../../libs/rest/http.error.js';
 
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
@@ -43,5 +45,56 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
 
   public async exists(positionId: string): Promise<boolean> {
     return (await this.storeHouseModel.exists({_id: positionId})) !== null;
+  }
+
+  public async isAvailibalCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean> {
+    const result = await this.storeHouseModel.findOne({ _id: positionId });
+
+    if (!result) {return false}
+    if (incomingQuantity > result.currentQuantity) {return false;}
+    return true;
+  }
+
+  public async incrementCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean> {
+    const product = await this.exists(positionId);
+
+    if (!product) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        'No Exist Product',
+      );
+    }
+
+    const result = await this.storeHouseModel.updateOne(
+      { _id: positionId },
+      { $inc: { currentQuantity: Number(incomingQuantity) } }
+    );
+    return result.modifiedCount > 0;
+  }
+
+  public async decrementCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean> {
+    const product = await this.exists(positionId);
+
+    if (!product) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        'No Exist Product',
+      );
+    }
+
+    const availibalCurrentQuantity = await this.isAvailibalCurrentQuantity(positionId, incomingQuantity);
+
+    if (availibalCurrentQuantity) {
+      const result = await this.storeHouseModel.updateOne(
+        { _id: positionId },
+        { $inc: { currentQuantity: -Number(incomingQuantity) } }
+      );
+      return result.modifiedCount > 0;
+    }
+
+    throw new HttpError(
+      StatusCodes.CONFLICT,
+      `Quantity of things less of exist`,
+    );
   }
 }
