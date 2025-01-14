@@ -61,7 +61,7 @@ export class DefaultJobService implements JobService {
   public async find(query: RequestQuery, userId: string): Promise<DocumentType<JobEntity>[] | null> {
 
     const createdAt = query.createdAt ? query.createdAt : new Date().toISOString();
-    const limit = query.limit && query.limit < DEFAULT_JOB_COUNT ? query.limit : DEFAULT_JOB_COUNT;
+    const limit = query.limit ? query.limit : DEFAULT_JOB_COUNT;
     const offset = query.offset ? query.offset : DEFAULT_JOB_OFFSET;
     let matchCondition = {};
     let dayStart;
