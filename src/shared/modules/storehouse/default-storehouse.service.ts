@@ -20,6 +20,7 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
 
   public async find(): Promise<DocumentType<StoreHouseEntity>[] | null> {
     const aggregationPipeline: PipelineStage[] = [
+      { $match: { isActive: true } },
       { $sort: { createdAt: SortType.Down } },
       { $addFields: { _id: { $toString: '$_id' } } }
     ];
@@ -40,7 +41,19 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
   }
 
   public async deleteById(positionId: string): Promise<void> {
-    await this.storeHouseModel.deleteOne({_id: positionId}).exec();
+    const position = await this.storeHouseModel.findById(positionId).exec();
+
+    if (!position || !position.isActive) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        'No Exist Product'
+      );
+    }
+
+    await this.storeHouseModel.findOneAndUpdate(
+      { _id: positionId },
+      { $set: { isActive: false } }
+    ).exec();
   }
 
   public async exists(positionId: string): Promise<boolean> {

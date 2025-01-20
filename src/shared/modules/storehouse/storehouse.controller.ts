@@ -76,7 +76,6 @@ export class StoreHouseController extends BaseController {
   public async create({ body }: CreateeStoreHouseRequest, res: Response): Promise<void> {
     const details = await this.storeHouseService.create(body);
     this.created(res, fillDTO(StoreHouseRdo, details));
-    this.logger.info(`Created new position ${body.name}`);
   }
 
   public async update({ body, params }: Request, res: Response): Promise<void> {
