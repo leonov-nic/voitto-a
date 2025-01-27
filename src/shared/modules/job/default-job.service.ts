@@ -44,7 +44,7 @@ export class DefaultJobService implements JobService {
     }
     // const result = await this.jobModel.create(dto);
     const newDate = new Date();
-    if (newDate.getHours() < 12) {
+    if (newDate.getHours() < 13) {
       newDate.setHours(newDate.getHours() - 15);
     }
 
