@@ -15,6 +15,19 @@ export enum SortType {
   Up = 1,
 }
 
+export type QueryStorehouseOperations = {
+  limit?: number;
+  page?: number;
+  createdAt?: string | '';
+  typeProduct?: keyof typeof TypeProduct | '';
+  type?: keyof typeof TypeOperation | '';
+}
+
+export enum TypeProduct {
+  Instruments ='Instruments',
+  Safety ='Safety',
+}
+
 export enum TypeOperation {
   Shipment = 'Shipment',
   Arrival = 'Arrival',

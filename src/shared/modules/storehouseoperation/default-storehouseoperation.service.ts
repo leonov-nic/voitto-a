@@ -5,7 +5,7 @@ import { PipelineStage } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../../libs/rest/http.error.js';
 
-import { SortType, Component, TypeOperation } from '../../types/index.js';
+import { SortType, Component, TypeOperation, QueryStorehouseOperations } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 
 import { StoreHouseOperationEntity, StoreHouseOperationServiceInterface, CreateStoreHouseOperationDto } from './index.js';
@@ -20,7 +20,16 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
     @inject(Component.StoreHouseService) private readonly storeHouseService: StoreHouseServiceInterface,
   ) {}
 
-  public async find(): Promise<DocumentType<StoreHouseOperationEntity>[] | null> {
+  public async getStoreOperationsCount(query: QueryStorehouseOperations): Promise<number> {
+    return await this.storeHouseOperationModel.find(query).count().exec();
+  }
+
+  public async find(query: QueryStorehouseOperations): Promise<DocumentType<StoreHouseOperationEntity>[] | null> {
+    const skip = query?.page && query?.limit ? (query.page - 1) * query.limit : 0;
+    const limit = query?.limit || 25;
+    const typeOperation = query?.type;
+    const typeProduct = query?.typeProduct;
+
     const aggregationProduct: PipelineStage[] = [
       {
         $lookup: {
@@ -84,10 +93,14 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
     ];
 
     const aggregationPipeline: PipelineStage[] = [
-      { $sort: { createdAt: SortType.Down } },
-      { $addFields: { _id: { $toString: '$_id' } } }
+      ...(typeOperation ? [{ $match: { typeOperation }}] : []),
+      ...(typeProduct ? [{ $match: { 'product.type': typeProduct, 'typeOperation': 'Shipment',}}] : []),
+      { $sort: { createdAt: SortType.Down }},
+      { $addFields: { _id: { $toString: '$_id'}}},
+      { $skip: skip },
+      { $limit: limit },
     ];
-    const result = await this.storeHouseOperationModel.aggregate([...aggregationPipeline, ...aggregationEmployee, ...aggregationProduct]).exec();
+    const result = await this.storeHouseOperationModel.aggregate([...aggregationEmployee, ...aggregationProduct, ...aggregationPipeline,]).exec();
     return result;
   }
 
@@ -115,18 +128,26 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
   }
 
   public async deleteById(operationId: string): Promise<void> {
-    const operation = await this.storeHouseOperationModel.findById({_id: operationId})
-    if (!operation) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'Operation not found',
-      );
-    }
-    await this.storeHouseOperationModel.deleteOne({_id: operationId}).exec();
+    const operation = await this.storeHouseOperationModel.findById({_id: operationId});
+
+    if (!operation) {throw new HttpError(StatusCodes.NOT_FOUND, 'Operation not found',);}
+
     if (operation.typeOperation === TypeOperation.Arrival) {
+      const operationsShipmentAfter = await this.storeHouseOperationModel.find({
+        productId: operation?.productId,
+        typeOperation: 'Shipment',
+        createdAt: { $gt: operation?.createdAt }
+      });
+
+      if (operationsShipmentAfter.length > 0) {
+        throw new HttpError(StatusCodes.CONFLICT,
+        `You must delete all opration Shipment for this item after ${operation.createdAt}`);
+      }
+      await this.storeHouseOperationModel.deleteOne({_id: operationId}).exec();
       await this.storeHouseService.decrementCurrentQuantity(operation.productId.toString(), operation.totalAmount);
     }
     if (operation.typeOperation === TypeOperation.Shipment) {
+      await this.storeHouseOperationModel.deleteOne({_id: operationId}).exec();
       await this.storeHouseService.incrementCurrentQuantity(operation.productId.toString(), operation.totalAmount);
     }
     this.logger.info(`Delete operation: ${operationId}`);

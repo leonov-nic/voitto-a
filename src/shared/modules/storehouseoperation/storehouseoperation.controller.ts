@@ -1,5 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
+
 import {
   BaseController,
   HttpMethod,
@@ -11,11 +13,13 @@ import { Component } from '../../types/index.js';
 import { StoreHouseOperationServiceInterface, CreateStoreHouseOperationDto, StoreHouseOperationRdo } from './index.js';
 
 import { fillDTO } from '../../helpers/index.js';
-import { RequestBody } from '../../types/index.js';
+import { QueryStorehouseOperations } from '../../types/index.js';
 
-export type CreateeStoreHouseOperationRequest = Request<
-  RequestBody,
-  CreateStoreHouseOperationDto
+export type OperationRequest = Request<
+  ParamsDictionary,
+  unknown,
+  unknown,
+  QueryStorehouseOperations
 >;
 
 
@@ -58,8 +62,16 @@ export class StoreHouseOperationController extends BaseController {
     });
   }
 
-  public async index(_req: Request, res: Response): Promise<void> {
-    const operations = await this.storeHouseOperationService.find();
+  public async index({query}: OperationRequest, res: Response): Promise<void> {
+    const {page, limit, typeProduct, type, createdAt} = query;
+    const newquery = {
+      page: Number(page),
+      limit: Number(limit),
+      type,
+      typeProduct,
+      createdAt: createdAt
+    };
+    const operations = await this.storeHouseOperationService.find(newquery);
     this.created(res, fillDTO(StoreHouseOperationRdo, operations));
   }
 

@@ -60,12 +60,11 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
     return (await this.storeHouseModel.exists({_id: positionId})) !== null;
   }
 
-  public async isAvailibalCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean> {
+  public async isAvailableCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean> {
     const result = await this.storeHouseModel.findOne({ _id: positionId });
 
     if (!result) {return false}
-    if (incomingQuantity > result.currentQuantity) {return false;}
-    return true;
+    return incomingQuantity <= result.currentQuantity;
   }
 
   public async incrementCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean> {
@@ -89,25 +88,29 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
     const product = await this.exists(positionId);
 
     if (!product) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'No Exist Product',
+      throw new HttpError(StatusCodes.NOT_FOUND,
+        'No such product exists'
       );
     }
 
-    const availibalCurrentQuantity = await this.isAvailibalCurrentQuantity(positionId, incomingQuantity);
+    const availableCurrentQuantity = await this.isAvailableCurrentQuantity(positionId, incomingQuantity);
 
-    if (availibalCurrentQuantity) {
+    if (availableCurrentQuantity) {
       const result = await this.storeHouseModel.updateOne(
         { _id: positionId },
         { $inc: { currentQuantity: -Number(incomingQuantity) } }
       );
-      return result.modifiedCount > 0;
+
+      if (result.modifiedCount === 0) {
+        throw new HttpError(StatusCodes.CONFLICT,
+          'No quantity was decremented; please check the incoming quantity.'
+        );
+      }
+      return true;
     }
 
-    throw new HttpError(
-      StatusCodes.CONFLICT,
-      `Quantity of things less of exist`,
+    throw new HttpError(StatusCodes.CONFLICT,
+      'Quantity of this item in the database is less than in this operation'
     );
   }
 }
