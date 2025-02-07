@@ -5,6 +5,10 @@ export class CreateStoreHouseOperationDto {
   @IsMongoId({message: 'productId is no mongo ID'})
   public productId: string;
 
+  @IsOptional()
+  @IsNumber()
+  public currentQuantityProduct?: number = 0;
+
   @ValidateIf(o => o.employeeId != null)
   @IsOptional()
   @IsMongoId({message: 'employeeId is no mongo ID'})

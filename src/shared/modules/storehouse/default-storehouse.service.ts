@@ -28,6 +28,10 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
     return result;
   }
 
+  public async findById(id: string): Promise<DocumentType<StoreHouseEntity> | null> {
+    return this.storeHouseModel.findById(id).exec();
+  }
+
   public async create(dto: CreateStoreHouseDto): Promise<DocumentType<StoreHouseEntity>> {
     const result = await this.storeHouseModel.create(dto);
     this.logger.info(`New position: ${dto.name} created`);
@@ -61,7 +65,7 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
   }
 
   public async isAvailableCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean> {
-    const result = await this.storeHouseModel.findOne({ _id: positionId });
+    const result = await this.findById(positionId);
 
     if (!result) {return false}
     return incomingQuantity <= result.currentQuantity;
@@ -71,10 +75,7 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
     const product = await this.exists(positionId);
 
     if (!product) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'No Exist Product',
-      );
+      throw new HttpError(StatusCodes.NOT_FOUND, 'No Exist Product',);
     }
 
     const result = await this.storeHouseModel.updateOne(
@@ -85,16 +86,15 @@ export class DefaultStoreHouseService implements StoreHouseServiceInterface {
   }
 
   public async decrementCurrentQuantity(positionId: string, incomingQuantity: number): Promise<boolean> {
-    const product = await this.exists(positionId);
+    const product = await this.findById(positionId);
 
-    if (!product) {
-      throw new HttpError(StatusCodes.NOT_FOUND,
-        'No such product exists'
-      );
+    if (!product) {throw new HttpError(StatusCodes.NOT_FOUND, 'No such product exists');
     }
 
     const availableCurrentQuantity = await this.isAvailableCurrentQuantity(positionId, incomingQuantity);
-
+    if (!availableCurrentQuantity) {
+      throw new HttpError(StatusCodes.CONFLICT, 'Conflict width count',);
+    }
     if (availableCurrentQuantity) {
       const result = await this.storeHouseModel.updateOne(
         { _id: positionId },

@@ -13,6 +13,9 @@ export class StoreHouseOperationEntity extends defaultClasses.TimeStamps {
   @prop({ref: StoreHouseEntity, _id: false, required: true})
   public productId: Ref<StoreHouseEntity>;
 
+  @prop()
+  public currentQuantityProduct: number = 0;
+
   @prop({ref: EmployeeEntity, _id: false})
   public employeeId: Ref<EmployeeEntity>;
 

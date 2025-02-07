@@ -12,6 +12,9 @@ export class StoreHouseOperationRdo {
   @Expose()
   public productId: string;
 
+  @Expose()
+  public currentQuantityProduct: number;
+
   @Expose({ name: 'product'})
   @Type(() => StoreHouseRdo)
   public product: StoreHouseRdo;

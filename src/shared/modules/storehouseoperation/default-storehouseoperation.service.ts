@@ -24,6 +24,10 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
     return await this.storeHouseOperationModel.find(query).count().exec();
   }
 
+  public async getStoreHouseOperationById(id: string): Promise<DocumentType<StoreHouseOperationEntity> | null> {
+    return await this.storeHouseOperationModel.findById(id).exec();
+  }
+
   public async find(query: QueryStorehouseOperations): Promise<DocumentType<StoreHouseOperationEntity>[] | null> {
     const skip = query?.page && query?.limit ? (query.page - 1) * query.limit : 0;
     const limit = query?.limit || 25;
@@ -105,15 +109,10 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
   }
 
   public async create(dto: CreateStoreHouseOperationDto): Promise<DocumentType<StoreHouseOperationEntity>> {
-    const {typeOperation} = dto;
+    const { typeOperation, productId } = dto;
 
-    const product = await this.storeHouseService.exists(dto.productId);
-    if (!product) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'Things not found',
-      );
-    }
+    const product = await this.storeHouseService.findById(productId);
+    if (!product) {throw new HttpError(StatusCodes.NOT_FOUND, 'Things not found');}
 
     if (typeOperation === TypeOperation.Arrival) {
       await this.storeHouseService.incrementCurrentQuantity(dto.productId, dto.totalAmount);
@@ -121,8 +120,7 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
     if (typeOperation === TypeOperation.Shipment) {
       await this.storeHouseService.decrementCurrentQuantity(dto.productId, dto.totalAmount);
     }
-
-    const result = await this.storeHouseOperationModel.create(dto);
+    const result = await this.storeHouseOperationModel.create({...dto, currentQuantityProduct: product.currentQuantity});
     this.logger.info(`New operation: ${dto.typeOperation} created`);
     return result;
   }
