@@ -120,7 +120,7 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
     if (typeOperation === TypeOperation.Shipment) {
       await this.storeHouseService.decrementCurrentQuantity(dto.productId, dto.totalAmount);
     }
-    const result = await this.storeHouseOperationModel.create({...dto, currentQuantityProduct: product.currentQuantity});
+    const result = await this.storeHouseOperationModel.create({...dto, currentQuantityProduct: Number(product.currentQuantity) - Number(dto.totalAmount)});
     this.logger.info(`New operation: ${dto.typeOperation} created`);
     return result;
   }
