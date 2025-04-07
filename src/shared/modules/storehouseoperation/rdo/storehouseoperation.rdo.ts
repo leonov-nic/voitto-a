@@ -13,6 +13,9 @@ export class StoreHouseOperationRdo {
   public productId: string;
 
   @Expose()
+  public productType: string | null;
+
+  @Expose()
   public currentQuantityProduct: number;
 
   @Expose({ name: 'product'})

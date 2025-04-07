@@ -72,7 +72,11 @@ export class StoreHouseOperationController extends BaseController {
       createdAt: createdAt
     };
     const operations = await this.storeHouseOperationService.find(newquery);
-    this.created(res, fillDTO(StoreHouseOperationRdo, operations));
+    const result = {
+      items: fillDTO(StoreHouseOperationRdo, operations?.items),
+      totalItems: operations?.totalItems,
+    }
+    this.created(res, result);
   }
 
   public async create(req: Request, res: Response): Promise<void> {

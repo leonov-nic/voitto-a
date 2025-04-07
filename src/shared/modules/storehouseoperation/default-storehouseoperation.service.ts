@@ -5,12 +5,18 @@ import { PipelineStage } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../../libs/rest/http.error.js';
 
-import { SortType, Component, TypeOperation, QueryStorehouseOperations } from '../../types/index.js';
+import { SortType, Component, TypeOperation, QueryStorehouseOperations, FilterStorehouseOperations } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 
-import { StoreHouseOperationEntity, StoreHouseOperationServiceInterface, CreateStoreHouseOperationDto } from './index.js';
+import {
+  StoreHouseOperationEntity,
+  StoreHouseOperationServiceInterface,
+  CreateStoreHouseOperationDto,
+  StoreOperationsResponse
+} from './index.js';
 // import { StoreHouseEntity } from '../storehouse/index.js';
 import { StoreHouseServiceInterface } from '../storehouse/index.js';
+
 
 @injectable()
 export class DefaultStoreHouseOperationService implements StoreHouseOperationServiceInterface {
@@ -21,16 +27,27 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
   ) {}
 
   public async getStoreOperationsCount(query: QueryStorehouseOperations): Promise<number> {
-    return await this.storeHouseOperationModel.find(query).count().exec();
+    const { type, typeProduct, createdAt } = query;
+    const filter: FilterStorehouseOperations = {};
+    if (type) {
+      filter.typeOperation = type;
+    }
+    if (typeProduct) {
+      filter.productType = typeProduct
+    }
+    if (createdAt) {
+      filter.createdAt = createdAt;
+    }
+    return await this.storeHouseOperationModel.find(filter).count().exec();
   }
 
   public async getStoreHouseOperationById(id: string): Promise<DocumentType<StoreHouseOperationEntity> | null> {
     return await this.storeHouseOperationModel.findById(id).exec();
   }
 
-  public async find(query: QueryStorehouseOperations): Promise<DocumentType<StoreHouseOperationEntity>[] | null> {
+  public async find(query: QueryStorehouseOperations): Promise<StoreOperationsResponse | null> {
     const skip = query?.page && query?.limit ? (query.page - 1) * query.limit : 0;
-    const limit = query?.limit || 25;
+    const limit = query?.limit || 10;
     const typeOperation = query?.type;
     const typeProduct = query?.typeProduct;
 
@@ -104,8 +121,16 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
       { $skip: skip },
       { $limit: limit },
     ];
-    const result = await this.storeHouseOperationModel.aggregate([...aggregationEmployee, ...aggregationProduct, ...aggregationPipeline,]).exec();
-    return result;
+
+    const [result, storeHouseOperationCount] = await Promise.all([
+      await this.storeHouseOperationModel.aggregate([...aggregationEmployee, ...aggregationProduct, ...aggregationPipeline,]).exec(),
+      await this.getStoreOperationsCount(query),
+    ]);
+
+    return {
+      items: result,
+      totalItems: storeHouseOperationCount,
+    }
   }
 
   public async create(dto: CreateStoreHouseOperationDto): Promise<DocumentType<StoreHouseOperationEntity>> {
@@ -120,7 +145,12 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
     if (typeOperation === TypeOperation.Shipment) {
       await this.storeHouseService.decrementCurrentQuantity(dto.productId, dto.totalAmount);
     }
-    const result = await this.storeHouseOperationModel.create({...dto, currentQuantityProduct: Number(product.currentQuantity) - Number(dto.totalAmount)});
+    const result = await this.storeHouseOperationModel.create({
+      ...dto,
+      currentQuantityProduct: typeOperation === TypeOperation.Arrival ? Number(product.currentQuantity) + Number(dto.totalAmount) :  Number(product.currentQuantity) - Number(dto.totalAmount),
+      productType: typeOperation === TypeOperation.Shipment ? product.type : null,
+      fromWhom: typeOperation === TypeOperation.Shipment ? "" : dto.fromWhom,
+    });
     this.logger.info(`New operation: ${dto.typeOperation} created`);
     return result;
   }

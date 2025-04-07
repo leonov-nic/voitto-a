@@ -3,8 +3,13 @@ import { StoreHouseOperationEntity, CreateStoreHouseOperationDto } from './index
 import { QueryStorehouseOperations } from '../../types/index.js';
 import { DocumentExists } from '../../libs/rest/index.js';
 
+export interface StoreOperationsResponse {
+  items: DocumentType<StoreHouseOperationEntity>[];
+  totalItems: number;
+}
+
 export interface StoreHouseOperationServiceInterface extends DocumentExists {
-  find(query: QueryStorehouseOperations): Promise<DocumentType<StoreHouseOperationEntity>[] | null>;
+  find(query: QueryStorehouseOperations): Promise<StoreOperationsResponse | null>;
   create(dto: CreateStoreHouseOperationDto): Promise<DocumentType<StoreHouseOperationEntity>>;
   deleteById(operationId: string): Promise<void>;
 }

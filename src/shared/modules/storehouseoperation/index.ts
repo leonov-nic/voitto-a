@@ -6,3 +6,4 @@ export { StoreHouseOperationServiceInterface } from "./storehouseoperation-servi
 export { DefaultStoreHouseOperationService } from "./default-storehouseoperation.service.js";
 export { StoreHouseOperationController } from "./storehouseoperation.controller.js";
 export { createStoreHouseOperationContainer } from "./storehouseoperation.container.js";
+export { StoreOperationsResponse } from "./storehouseoperation-service.interface.js";

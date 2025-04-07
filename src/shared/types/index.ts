@@ -23,6 +23,12 @@ export type QueryStorehouseOperations = {
   type?: keyof typeof TypeOperation | '';
 }
 
+export type FilterStorehouseOperations = {
+  createdAt?: string | '';
+  productType?: keyof typeof TypeProduct | '';
+  typeOperation?: keyof typeof TypeOperation | '';
+}
+
 export enum TypeProduct {
   Instruments ='Instruments',
   Safety ='Safety',
@@ -90,3 +96,4 @@ export type ValidationErrorField = {
   value: string;
   messages: string[];
 };
+
