@@ -60,6 +60,15 @@ export class StoreHouseOperationController extends BaseController {
         new PrivateRouteMiddleware,
       ]
     });
+
+    this.addRoute({
+      path: '/statistics',
+      method: HttpMethod.Get,
+      handler: this.getStatistics,
+      middlewares: [
+        new PrivateRouteMiddleware,
+      ],
+    });
   }
 
   public async index({query}: OperationRequest, res: Response): Promise<void> {
@@ -87,5 +96,10 @@ export class StoreHouseOperationController extends BaseController {
   public async delete({ params }: Request, res: Response): Promise<void> {
     const deletedOperation = await this.storeHouseOperationService.deleteById(params.id);
     this.noContent(res, fillDTO(StoreHouseOperationRdo, deletedOperation));
+  }
+
+  public async getStatistics(_req: Request, res: Response): Promise<void> {
+    const result = await this.storeHouseOperationService.getStatisticsOfOperations();
+    this.created(res, result);
   }
 }

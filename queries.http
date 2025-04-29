@@ -19,8 +19,8 @@ POST http://localhost:5002/api/users/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "butov@gmail.com",
-  "password": "123@regular"
+  "email": "admin@admin.com",
+  "password": "123@admin"
 }
 ###
 
@@ -188,4 +188,10 @@ Content-Type: application/json
    "normOfMinute": 50,
    "customer": "Zen"
 }
+###
+
+##
+GET http://localhost:5002/api/storeoperation/statistics HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsIm5hbWUiOiJMaXphIFMiLCJhdmF0YXIiOiJkZWZhdWx0LWF2YXRhci5qcGciLCJ0eXBlIjoiYWRtaW4iLCJpZCI6IjY3MjhmY2IyY2U4ZTNiNmRlZTcyZjIyMiIsImlhdCI6MTc0NTI0MDY1MiwiZXhwIjoxNzQ1MzIzNDUyfQ.HHIapHQX71QPUS_oicocAt4c1sejfTEx7RMihKnolzQ
+content-type: application/json
 ###

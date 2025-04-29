@@ -5,7 +5,11 @@ import { PipelineStage } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../../libs/rest/http.error.js';
 
-import { SortType, Component, TypeOperation, QueryStorehouseOperations, FilterStorehouseOperations } from '../../types/index.js';
+import { SortType, Component, TypeOperation,
+  QueryStorehouseOperations,
+  FilterStorehouseOperations,
+  StatisticsOfOperations
+} from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 
 import {
@@ -184,4 +188,85 @@ export class DefaultStoreHouseOperationService implements StoreHouseOperationSer
   public async exists(operationId: string): Promise<boolean> {
     return (await this.storeHouseOperationModel.exists({_id: operationId})) !== null;
   }
+
+  public async getStatisticsOfOperations(): Promise<StatisticsOfOperations[]> {
+    const aggregationEmployee: PipelineStage[] = [
+      {
+        $lookup: {
+          from: 'Employees',
+          localField: 'employeeId',
+          foreignField: '_id',
+          as: 'employee',
+        },
+      },
+      {
+        $unwind: {
+          path: '$employee',
+          preserveNullAndEmptyArrays: false // сохраняем null, если employeeId равен null
+        }
+      },
+    ];
+
+    const aggregationProduct: PipelineStage[] = [
+      {
+        $lookup: {
+          from: 'Storehouse',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'product',
+        },
+      },
+      {
+        $unwind: '$product'
+      },
+    ];
+
+    const aggregationPipeline: PipelineStage[] = [
+      {
+        $group: {
+          _id: {
+            employeeName: '$employee.familyName', // Группируем по имени сотрудника
+            productName: '$product.name' // Группируем по имени продукта
+          },
+          totalAmount: { $sum: '$totalAmount' } // Суммируем количество
+        }
+      },
+      // {
+      //   $project: {
+      //     _id: 0,
+      //     employeeName: '$_id.employeeName', // Извлекаем имя сотрудника
+      //     productName: '$_id.productName', // Извлекаем имя продукта
+      //     totalAmount: 1
+      //   }
+      // }
+      {
+        $group: {
+          _id: '$_id.employeeName', // Группируем по имени сотрудника
+          products: {
+            $push: {
+              productName: '$_id.productName', // Имя продукта
+              totalAmount: '$totalAmount' // Сумма для продукта
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          employeeName: '$_id', // Извлекаем имя сотрудника
+          products: 1 // Включаем массив продуктов
+        }
+      }
+    ];
+
+    const result = await this.storeHouseOperationModel.aggregate([
+      ...aggregationEmployee,
+      ...aggregationProduct,
+      ...aggregationPipeline,
+    ]).exec();
+
+    return result;
+  }
+
+
 }

@@ -23,6 +23,14 @@ export type QueryStorehouseOperations = {
   type?: keyof typeof TypeOperation | '';
 }
 
+export type StatisticsOfOperations = {
+  products: {
+    productName: 'string',
+    totalAmount: 'number',
+  },
+  employeeName: 'string',
+}
+
 export type FilterStorehouseOperations = {
   createdAt?: string | '';
   productType?: keyof typeof TypeProduct | '';
