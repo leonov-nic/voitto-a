@@ -286,7 +286,9 @@ export class DefaultJobService implements JobService {
 
   public async deleteById(jobId: string): Promise<DocumentType<JobEntity> | null> {
     const result = this.jobModel
-      .findByIdAndDelete(jobId)
+      // .findByIdAndDelete(jobId)
+      // сделал это изиенение из за ошибки на продакшн сервере
+      .findOneAndDelete({_id: jobId})
       .exec();
     return (await result).value as DocumentType<JobEntity>;
   }

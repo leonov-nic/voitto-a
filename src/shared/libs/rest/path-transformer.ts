@@ -2,8 +2,8 @@ import { inject, injectable } from 'inversify';
 import { Component } from '../../types/index.js';
 import { Logger } from '../logger/index.js';
 import { STATIC_FILES_ROUTE, STATIC_UPLOAD_ROUTE } from '../../../rest/index.js';
-import { getFullServerPath } from '../../helpers/index.js';
-import { Config, RestSchema } from '../config/index.js';
+// import { getFullServerPath } from '../../helpers/index.js';
+// import { Config, RestSchema } from '../config/index.js';
 
 const DEFAULT_STATIC_IMAGES = [
   'default-avatar.jpg',
@@ -21,7 +21,7 @@ function isObject(value: unknown): value is Record<string, object> {
 export class PathTransformer {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
-    @inject(Component.Config) private readonly config: Config<RestSchema>,
+    // @inject(Component.Config) private readonly config: Config<RestSchema>,
   ) {
     this.logger.info('PathTranformer created!');
   }
@@ -51,11 +51,12 @@ export class PathTransformer {
           if (this.isStaticProperty(key) && typeof value === 'string') {
             const staticPath = STATIC_FILES_ROUTE;
             const uploadPath = STATIC_UPLOAD_ROUTE;
-            const serverHost = this.config.get('HOST');
-            const serverPort = this.config.get('PORT');
+            // const serverHost = this.config.get('HOST');
+            // const serverPort = this.config.get('PORT');
 
             const rootPath = this.hasDefaultImage(value) ? staticPath : uploadPath;
-            current[key] = `${getFullServerPath(serverHost, serverPort)}${rootPath}/${value}`;
+            // current[key] = `${getFullServerPath(serverHost, serverPort)}${rootPath}/${value}`;
+            current[key] = `${rootPath}/${value}`;
           }
         }
       }
