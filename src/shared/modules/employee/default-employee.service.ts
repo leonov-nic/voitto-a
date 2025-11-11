@@ -25,6 +25,7 @@ export class DefaultEmployeeService implements EmployeeService {
       { $addFields: { _id: { $toString: '$_id' } } }
     ];
     const result = await this.employeeModel.aggregate(aggregationPipeline).exec();
+        console.log(result);
     return result;
   }
 
@@ -41,6 +42,12 @@ export class DefaultEmployeeService implements EmployeeService {
       .exec();
   }
 
+  public async recoveryById(employeeId: string): Promise<DocumentType<EmployeeEntity> | null> {
+    const employee = await this.employeeModel.findOne({ _id: employeeId }).exec();
+    if (!employee) { return null; }
+    employee.deleted = !employee.deleted;
+    return await employee.save();
+  }
 
   public async deleteById(employeeId: string): Promise<DocumentType<EmployeeEntity> | null> {
     const employee = await this.employeeModel.findOne({ _id: employeeId }).exec();

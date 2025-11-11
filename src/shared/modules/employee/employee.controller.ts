@@ -77,7 +77,15 @@ export class EmployeeController extends BaseController {
         new ValidateAuthorsMiddleware(this.employeeService, 'Employees', 'id')
       ]
     });
-
+    this.addRoute({
+      path: '/recovery/:id',
+      method: HttpMethod.Patch,
+      handler: this.recovery,
+      middlewares: [
+        new PrivateRouteMiddleware,
+        new ValidateAuthorsMiddleware(this.employeeService, 'Employees', 'id')
+      ]
+    });
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
@@ -101,5 +109,11 @@ export class EmployeeController extends BaseController {
     const updatedEmployee = await this.employeeService.updateById(body, params.id);
     this.ok(res, fillDTO(UpdateEmployeeDto, updatedEmployee));
     this.logger.info(`Employee is updated for ${body.familyName}`);
+  }
+
+  public async recovery({ params }: Request, res: Response): Promise<void> {
+    const recoveryEmployee = await this.employeeService.recoveryById(params.id);
+    this.ok(res, fillDTO(UpdateEmployeeDto, recoveryEmployee));
+    this.logger.info(`Employee ${recoveryEmployee?.familyName} is recovered`);
   }
 }

@@ -9,4 +9,5 @@ export interface EmployeeService extends DocumentExists, IsDocumentAuthor {
   create(dto: CreateEmployeeDto): Promise<DocumentType<EmployeeEntity>>;
   deleteById(employeeId: string): Promise<DocumentType<EmployeeEntity> | null>;
   updateById(dto: UpdateEmployeeDto, employeeId: string): Promise<DocumentType<EmployeeEntity> | null>;
+  recoveryById(employeeId: string): Promise<DocumentType<EmployeeEntity> | null>;
 }
