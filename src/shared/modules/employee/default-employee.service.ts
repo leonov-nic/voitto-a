@@ -60,6 +60,9 @@ export class DefaultEmployeeService implements EmployeeService {
   public async recoveryById(employeeId: string): Promise<DocumentType<EmployeeEntity> | null> {
     const employee = await this.employeeModel.findOne({ _id: employeeId }).exec();
     if (!employee) { return null; }
+    // const similarEmployee = await this.employeeModel.findOne({ registrationNumber: employee.registrationNumber }).exec();
+    const similarEmployeeCount = await this.employeeModel.countDocuments({ registrationNumber: employee.registrationNumber, deleted: false }).exec();
+    if (similarEmployeeCount > 0) { throw new Error('An employee with this registration number exists'); }
     employee.deleted = !employee.deleted;
     return await employee.save();
   }
