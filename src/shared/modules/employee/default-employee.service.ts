@@ -25,8 +25,23 @@ export class DefaultEmployeeService implements EmployeeService {
       { $addFields: { _id: { $toString: '$_id' } } }
     ];
     const result = await this.employeeModel.aggregate(aggregationPipeline).exec();
-        console.log(result);
     return result;
+  }
+
+  public async findDeleted(): Promise<DocumentType<EmployeeEntity>[]> {
+    const aggregationPipeline: PipelineStage[] = [
+      { $match: { deleted: true } },
+      { $sort: { createdAt: SortType.Down } },
+      { $addFields: { _id: { $toString: '$_id' } } }
+    ];
+
+    try {
+      const result = await this.employeeModel.aggregate(aggregationPipeline).exec();
+      return result.length > 0 ? result : [];
+    } catch (error) {
+      this.logger.info('Error fetching deleted employees:', error);
+      throw new Error('Could not fetch deleted employees');
+    }
   }
 
   public async create(dto: CreateEmployeeDto): Promise<DocumentType<EmployeeEntity>> {

@@ -48,6 +48,15 @@ export class EmployeeController extends BaseController {
     });
 
     this.addRoute({
+      path: '/deleted',
+      method: HttpMethod.Get,
+      handler: this.getDeletedEmployees,
+      middlewares: [
+        new PrivateRouteMiddleware,
+      ],
+    });
+
+    this.addRoute({
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
@@ -90,6 +99,11 @@ export class EmployeeController extends BaseController {
 
   public async index(_req: Request, res: Response): Promise<void> {
     const employees = await this.employeeService.find();
+    this.created(res, fillDTO(EmployeeRdo, employees));
+  }
+
+  public async getDeletedEmployees(_req: Request, res: Response): Promise<void> {
+    const employees = await this.employeeService.findDeleted();
     this.created(res, fillDTO(EmployeeRdo, employees));
   }
 
