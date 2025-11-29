@@ -37,6 +37,9 @@ export class JobEntity extends defaultClasses.TimeStamps {
 
   @prop({default: null, min: null, max: 300})
   public extra?: number;
+
+  @prop({})
+  public isLunch?: boolean;
 }
 
 export const JobModel = getModelForClass(JobEntity);

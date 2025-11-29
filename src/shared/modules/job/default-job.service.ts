@@ -222,7 +222,8 @@ export class DefaultJobService implements JobService {
                       if: {
                         $and: [
                           {$lt: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeFrom", 0, 19]}} }}, 12]},
-                          {$gte: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeTo", 0, 19]}} }}, 12]}
+                          {$gte: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeTo", 0, 19]}} }}, 12]},
+                          {$eq: ["$isLunch", true]}
                         ]
                       },
                       then: { $subtract: ["$$hoursDifference", 0.5] }, // Вычитаем 0.5 часа (30 минут)
