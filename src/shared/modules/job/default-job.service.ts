@@ -9,7 +9,7 @@ import { JobEntity, CreateJobDto, UpdateJobDto } from './index.js';
 import { EmployeeEntity } from '../employee/index.js';
 import { DetailEntity } from '../detail/detail.entity.js';
 import { UserEntity } from '../user/user.entity.js';
-import { RequestQuery } from './index.js';
+import { RequestQuery, CreateRequestQuery} from './index.js';
 
 const DEFAULT_JOB_COUNT = 250;
 const DEFAULT_JOB_OFFSET = 0;
@@ -24,7 +24,9 @@ export class DefaultJobService implements JobService {
     @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>,
   ) {}
 
-  public async create(dto: CreateJobDto): Promise<DocumentType<JobEntity>> {
+  public async create(dto: CreateJobDto, query: CreateRequestQuery): Promise<DocumentType<JobEntity>> {
+    const isTimeNow = query.isTimeNow ? query.isTimeNow : true;
+    console.log(isTimeNow);
     const isExistEmployee = await this.employeeModel.findById({_id: dto.employeeId});
     const isExistDetaile = await this.detailModel.findById({_id: dto.detailId});
 
@@ -220,10 +222,20 @@ export class DefaultJobService implements JobService {
                   in: {
                     $cond: {
                       if: {
-                        $and: [
-                          {$lt: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeFrom", 0, 19]}} }}, 12]},
-                          {$gte: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeTo", 0, 19]}} }}, 12]},
-                          {$eq: ["$isLunch", true]}
+                        $or: [
+                          {
+                            $and: [
+                              {$lt: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeFrom", 0, 19]}} }}, 12]},
+                              {$gte: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeTo", 0, 19]}} }}, 12]},
+                              {$eq: ["$isLunch", true]}
+                            ]
+                          },
+                          {
+                            $and: [
+                              { $gte: ["$$hoursDifference", 9] },
+                              { $eq: ["$isLunch", true] }
+                            ]
+                          }
                         ]
                       },
                       then: { $subtract: ["$$hoursDifference", 0.5] }, // Вычитаем 0.5 часа (30 минут)
