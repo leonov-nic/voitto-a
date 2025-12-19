@@ -202,7 +202,6 @@ export class DefaultJobService implements JobService {
           }
         }
       },
-
       {
         $addFields: {
           totalHours: {
@@ -217,28 +216,45 @@ export class DefaultJobService implements JobService {
                         { $subtract: ["$convertedTimeTo", "$convertedTimeFrom"] },
                         3600000
                       ]
+                    },
+                    // Вычисляем время старта в числовом формате (часы + минуты/60)
+                    startVal: {
+                      $let: {
+                        vars: { d: { $dateFromString: { dateString: { $substr: ["$timeFrom", 0, 19] } } } },
+                        in: { $add: [{ $hour: "$$d" }, { $divide: [{ $minute: "$$d" }, 60] }] }
+                      }
+                    },
+                    // Вычисляем время конца в числовом формате (часы + минуты/60)
+                    endVal: {
+                      $let: {
+                        vars: { d: { $dateFromString: { dateString: { $substr: ["$timeTo", 0, 19] } } } },
+                        in: { $add: [{ $hour: "$$d" }, { $divide: [{ $minute: "$$d" }, 60] }] }
+                      }
                     }
                   },
                   in: {
                     $cond: {
                       if: {
                         $or: [
+                          // Условие 1: старт < 10:00 и конец > 10:30 и обед разрешен
                           {
                             $and: [
-                              {$lt: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeFrom", 0, 19]}} }}, 12]},
-                              {$gte: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeTo", 0, 19]}} }}, 12]},
-                              {$eq: ["$isLunch", true]}
+                              { $lt: ["$$startVal", 10] },
+                              { $gt: ["$$endVal", 10.5] },
+                              { $eq: ["$isLunch", true] }
                             ]
                           },
+                          // Условие 2: старт < 19:00 и конец > 19:30 и обед разрешен
                           {
                             $and: [
-                              { $gte: ["$$hoursDifference", 9] },
+                              { $lt: ["$$startVal", 19] },
+                              { $gt: ["$$endVal", 19.5] },
                               { $eq: ["$isLunch", true] }
                             ]
                           }
                         ]
                       },
-                      then: { $subtract: ["$$hoursDifference", 0.5] }, // Вычитаем 0.5 часа (30 минут)
+                      then: { $subtract: ["$$hoursDifference", 0.5] },
                       else: "$$hoursDifference"
                     }
                   }
@@ -248,6 +264,52 @@ export class DefaultJobService implements JobService {
           }
         }
       },
+
+      // {
+      //   $addFields: {
+      //     totalHours: {
+      //       $cond: {
+      //         if: { $and: [{ $eq: ["$timeTo", "-"] }, { $eq: ["$timeFrom", "-"] }] },
+      //         then: "-",
+      //         else: {
+      //           $let: {
+      //             vars: {
+      //               hoursDifference: {
+      //                 $divide: [
+      //                   { $subtract: ["$convertedTimeTo", "$convertedTimeFrom"] },
+      //                   3600000
+      //                 ]
+      //               }
+      //             },
+      //             in: {
+      //               $cond: {
+      //                 if: {
+      //                   $or: [
+      //                     {
+      //                       $and: [
+      //                         {$lt: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeFrom", 0, 19]}} }}, 12]},
+      //                         {$gte: [{$hour: { $dateFromString: { dateString:  {$substr: ["$timeTo", 0, 19]}} }}, 12]},
+      //                         {$eq: ["$isLunch", true]}
+      //                       ]
+      //                     },
+      //                     {
+      //                       $and: [
+      //                         { $gte: ["$$hoursDifference", 9] },
+      //                         { $eq: ["$isLunch", true] }
+      //                       ]
+      //                     }
+      //                   ]
+      //                 },
+      //                 then: { $subtract: ["$$hoursDifference", 0.5] }, // Вычитаем 0.5 часа (30 минут)
+      //                 else: "$$hoursDifference"
+      //               }
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // },
 
       { $addFields: { detailId: { $toString: '$detailId' } } },
       { $addFields: { employeeId: { $toString: '$employeeId' } } },
