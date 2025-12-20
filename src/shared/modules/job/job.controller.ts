@@ -92,8 +92,8 @@ export class JobController extends BaseController {
     this.ok(res, fillDTO(JobRdo, jobs));
   }
 
-  public async create({ body, tokenPayload, params }: Request, res: Response): Promise<void> {
-    const job = await this.jobService.create({...body, master: tokenPayload.id}, params);
+  public async create({ body, tokenPayload, query }: Request, res: Response): Promise<void> {
+    const job = await this.jobService.create({...body, master: tokenPayload.id}, query);
     this.created(res, fillDTO(JobRdo, job));
     this.logger.info(`Created job of master ${tokenPayload.id}`);
   }

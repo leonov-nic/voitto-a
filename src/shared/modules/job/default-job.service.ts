@@ -25,29 +25,19 @@ export class DefaultJobService implements JobService {
   ) {}
 
   public async create(dto: CreateJobDto, query: CreateRequestQuery): Promise<DocumentType<JobEntity>> {
-    const isTimeNow = query.isTimeNow ? query.isTimeNow : true;
-    console.log(isTimeNow);
+    const isTimeNow = String(query.isTimeNow) !== 'false';
+
     const isExistEmployee = await this.employeeModel.findById({_id: dto.employeeId});
     const isExistDetaile = await this.detailModel.findById({_id: dto.detailId});
 
-    if (!isExistEmployee) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'Employee no exist',
-        'registrationExists'
-      );
-    }
-    if (!isExistDetaile) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        'Detail no exist',
-        'registrationExists'
-      );
-    }
+    if (!isExistEmployee) {throw new HttpError(StatusCodes.NOT_FOUND, 'Employee no exist', 'registrationExists');}
+    if (!isExistDetaile) {throw new HttpError(StatusCodes.NOT_FOUND, 'Detail no exist', 'registrationExists');}
     // const result = await this.jobModel.create(dto);
     const newDate = new Date();
-    if (newDate.getHours() < 19) {
-      newDate.setHours(newDate.getHours() - 20);
+
+    if (!isTimeNow) {
+      // Если НЕ текущее время (false), вычитаем ровно 24 часа
+      newDate.setDate(newDate.getDate() - 1);
     }
 
     const result = await this.jobModel.create({
