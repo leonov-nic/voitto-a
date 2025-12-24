@@ -74,19 +74,25 @@ export class DefaultJobService implements JobService {
         }
       };
     } else if (createdAt) {
-        dayStart = new Date(createdAt);
+        dayStart = new Date(createdAt); // JS сам поймет смещение (+03:00)
         dayStart.setHours(0, 0, 0, 0);
-
-        if (createdAt.includes('+')) {
-          const hoursToAdd = parseInt(createdAt.split('+')[1].split(':')[0]);
-          dayStart.setHours(dayStart.getHours() + hoursToAdd);
-        } else if (createdAt.includes('-')) {
-          const hoursToMinus = parseInt(createdAt.split('-')[1].split(':')[0]);
-          dayStart.setHours(dayStart.getHours() - hoursToMinus);
-        };
-
         dayEnd = new Date(dayStart);
         dayEnd.setDate(dayEnd.getDate() + 1);
+
+
+        // dayStart = new Date(createdAt);
+        // dayStart.setHours(0, 0, 0, 0);
+
+        // if (createdAt.includes('+')) {
+        //   const hoursToAdd = parseInt(createdAt.split('+')[1].split(':')[0]);
+        //   dayStart.setHours(dayStart.getHours() + hoursToAdd);
+        // } else if (createdAt.includes('-')) {
+        //   const hoursToMinus = parseInt(createdAt.split('-')[1].split(':')[0]);
+        //   dayStart.setHours(dayStart.getHours() - hoursToMinus);
+        // };
+
+        // dayEnd = new Date(dayStart);
+        // dayEnd.setDate(dayEnd.getDate() + 1);
 
         matchCondition = {
           createdAt: {
@@ -170,11 +176,22 @@ export class DefaultJobService implements JobService {
         $addFields: {
           convertedTimeTo: {
             $cond: {
-              if: { $eq: ["$timeTo", "-"] },
+              if: { $or: [
+                { $eq: ["$timeTo", "-"] },
+                { $not: ["$timeTo"] } // проверка на null/undefined
+              ]},
+              // if: { $eq: ["$timeTo", "-"] },
               then: "-",
+              // else: {
+              //   $dateFromString: {
+              //     dateString: "$timeTo"
+              //   }
+              // }
               else: {
                 $dateFromString: {
-                  dateString: "$timeTo"
+                  dateString: "$timeTo",
+                  onError: null, // Важно! Чтобы агрегация не падала
+                  onNull: null
                 }
               }
             }
