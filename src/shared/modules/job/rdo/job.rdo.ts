@@ -49,4 +49,7 @@ export class JobRdo {
 
   @Expose()
   public count: number;
+
+  @Expose()
+  public isLunch: boolean;
 }
