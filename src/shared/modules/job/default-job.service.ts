@@ -191,7 +191,9 @@ export class DefaultJobService implements JobService {
               then: "-",
               else: {
                 $dateFromString: {
-                  dateString: "$timeFrom"
+                  dateString: "$timeFrom",
+                  onError: null, // Важно! Чтобы агрегация не падала
+                  onNull: null
                 }
               }
             }
