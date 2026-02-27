@@ -63,9 +63,10 @@ export class DefaultJobService implements JobService {
       const monthYear = new Date(createdAt);
       const month = monthYear.getMonth();
       const year = monthYear.getFullYear();
-      const startOfMonth = new Date(year, month, 1);
-      const endOfMonth = new Date(year, month + 1, 1);
-
+      // const startOfMonth = new Date(year, month, 1);
+      // const endOfMonth = new Date(year, month + 1, 1);
+      const startOfMonth = new Date(year, month, 1, 0, 0, 0, 0);
+      const endOfMonth = new Date(year, month + 1, 1, 0, 0, 0, 0);
 
       matchCondition = {
         createdAt: {
@@ -80,19 +81,7 @@ export class DefaultJobService implements JobService {
         dayEnd.setDate(dayEnd.getDate() + 1);
 
 
-        // dayStart = new Date(createdAt);
-        // dayStart.setHours(0, 0, 0, 0);
 
-        // if (createdAt.includes('+')) {
-        //   const hoursToAdd = parseInt(createdAt.split('+')[1].split(':')[0]);
-        //   dayStart.setHours(dayStart.getHours() + hoursToAdd);
-        // } else if (createdAt.includes('-')) {
-        //   const hoursToMinus = parseInt(createdAt.split('-')[1].split(':')[0]);
-        //   dayStart.setHours(dayStart.getHours() - hoursToMinus);
-        // };
-
-        // dayEnd = new Date(dayStart);
-        // dayEnd.setDate(dayEnd.getDate() + 1);
 
         matchCondition = {
           createdAt: {
