@@ -26,7 +26,7 @@ export class JobEntity extends defaultClasses.TimeStamps {
   @prop({ref: DetailEntity, _id: false})
   public detailId: Ref<DetailEntity>;
 
-  @prop({required: true, default: 0, min: 0, max: 300})
+  @prop({required: true, default: 0, min: 0, max: 2500})
   public quantity: number;
 
   @prop({ref: UserEntity, _id: false})

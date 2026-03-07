@@ -237,16 +237,16 @@ export class DefaultJobService implements JobService {
                           // Условие 1: старт < 10:00 и конец > 10:30 и обед разрешен
                           {
                             $and: [
-                              { $lte: ["$$startVal", 10] },
-                              { $gte: ["$$endVal", 10.5] },
+                              { $lte: ["$$startVal", 11] },
+                              { $gte: ["$$endVal", 11.5] },
                               { $eq: ["$isLunch", true] }
                             ]
                           },
                           // Условие 2: старт < 19:00 и конец > 19:30 и обед разрешен
                           {
                             $and: [
-                              { $lte: ["$$startVal", 19] },
-                              { $gte: ["$$endVal", 19.5] },
+                              { $lte: ["$$startVal", 20] },
+                              { $gte: ["$$endVal", 20.5] },
                               { $eq: ["$isLunch", true] }
                             ]
                           }
