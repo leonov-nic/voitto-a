@@ -246,7 +246,12 @@ export class DefaultJobService implements JobService {
                           {
                             $and: [
                               { $lte: ["$$startVal", 20] },
-                              { $gte: ["$$endVal", 20.5] },
+                              {
+                                $or: [
+                                  { $gte: ["$$endVal", 20.5] },
+                                  { $lt: ["$$endVal", "$$startVal"] }
+                                ]
+                              },
                               { $eq: ["$isLunch", true] }
                             ]
                           }
