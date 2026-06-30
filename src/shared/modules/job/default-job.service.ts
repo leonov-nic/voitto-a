@@ -32,12 +32,15 @@ export class DefaultJobService implements JobService {
 
     if (!isExistEmployee) {throw new HttpError(StatusCodes.NOT_FOUND, 'Employee no exist', 'registrationExists');}
     if (!isExistDetaile) {throw new HttpError(StatusCodes.NOT_FOUND, 'Detail no exist', 'registrationExists');}
-    // const result = await this.jobModel.create(dto);
-    const newDate = new Date();
 
-    if (!isTimeNow) {
-      // Если НЕ текущее время (false), вычитаем ровно 24 часа
-      newDate.setDate(newDate.getDate() - 1);
+    let newDate = new Date();
+
+    if (query.createdAt) {
+      newDate = new Date(query.createdAt);
+    } else {
+      if (!isTimeNow) {
+        newDate.setDate(newDate.getDate() - 1);
+      }
     }
 
     const result = await this.jobModel.create({

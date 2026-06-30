@@ -28,6 +28,7 @@ export type RequestQuery = {
 
 export type CreateRequestQuery = {
   isTimeNow?: boolean;
+  createdAt?: string | null;
 }
 
 @injectable()
