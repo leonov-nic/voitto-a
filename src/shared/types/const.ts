@@ -35,6 +35,7 @@ export const NAMESOFJOB = [
   'pac',
   's',
   'sob',
+  'barv',
 ];
 
 export const TypeOfJob: { [key in TNameOfJob]: TTypeOfJob } = {
@@ -161,5 +162,9 @@ export const TypeOfJob: { [key in TNameOfJob]: TTypeOfJob } = {
   sob: {
     name: "sob",
     longName: "sobranie",
+  },
+  barv: {
+    name: "barv",
+    longName: "barv",
   },
 };
