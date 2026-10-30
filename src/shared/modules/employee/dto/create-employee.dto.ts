@@ -15,4 +15,10 @@ export class CreateEmployeeDto {
   public mainJob: TNameOfJob;
 
   public masterId: string;
+
+  // @Matches(/^[a-zA-Zа-яА-ЯёЁ\s-]+$/, {
+  //   message: 'only english and russian letters',
+  // })
+  @IsString({message: CreateEmployeeValidationMessage.hiringChannel.invalidFormat})
+  public hiringChannel: string;
 }

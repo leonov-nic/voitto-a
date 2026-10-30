@@ -14,4 +14,7 @@ export class UpdateEmployeeDto {
 
   @IsOptional()
   public masterId: string;
+
+  @IsOptional()
+  public hiringChannel: string;
 }

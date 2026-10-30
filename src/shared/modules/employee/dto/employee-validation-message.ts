@@ -10,5 +10,8 @@ export const CreateEmployeeValidationMessage = {
   },
   masterId: {
     invalidFormat: 'MasterId must be a valid string',
+  },
+  hiringChannel: {
+    invalidFormat: 'hiringChannel must be a valid string',
   }
 } as const;

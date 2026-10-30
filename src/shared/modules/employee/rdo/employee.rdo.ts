@@ -17,4 +17,7 @@ export class EmployeeRdo {
   @Expose({ name: 'masterId'})
   @Type(() => UserRdo)
   public masterId: UserRdo;
+
+  @Expose()
+  public hiringChannel: string;
 }

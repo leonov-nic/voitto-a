@@ -23,6 +23,9 @@ export class EmployeeEntity extends defaultClasses.TimeStamps {
 
   @prop({required: true})
   public masterId: string;
+
+  @prop({required: true, default: 'test'})
+  public hiringChannel: string;
 }
 
 export const EmployeeModel = getModelForClass(EmployeeEntity);
